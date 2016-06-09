@@ -315,7 +315,9 @@ func (c *Conn) loop() {
 			wg.Add(1)
 			go func() {
 				err := c.sendLoop(c.conn, closeChan)
-				c.logger.Printf("Send loop terminated: err=%v", err)
+				if err != nil {
+					c.logger.Printf("Send loop terminated: err=%v", err)
+				}
 				c.conn.Close() // causes recv loop to EOF/exit
 				wg.Done()
 			}()
@@ -323,9 +325,10 @@ func (c *Conn) loop() {
 			wg.Add(1)
 			go func() {
 				err := c.recvLoop(c.conn)
-				c.logger.Printf("Recv loop terminated: err=%v", err)
 				if err == nil {
 					panic("zk: recvLoop should never return nil error")
+				} else if err != io.EOF {
+					c.logger.Printf("Recv loop terminated: err=%v", err)
 				}
 				close(closeChan) // tell send loop to exit
 				wg.Done()
