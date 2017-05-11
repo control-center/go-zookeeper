@@ -304,7 +304,6 @@ func (c *Conn) connect() error {
 	var retryStart bool
 
 	useHostDelay := false   // At first, aggressively try to connect to any available host
-	c.backoff.Reset()
 
 	c.logger.Printf("Starting connect, connectTimeout=%2.1f perHostConnectDelay=%2.1f",
 		c.connectTimeout.Seconds(), c.perHostConnectDelay.Seconds())
@@ -335,7 +334,6 @@ func (c *Conn) connect() error {
 			c.conn = zkConn
 			c.setState(StateConnected)
 			c.logger.Printf("Connected to %s", c.Server())
-			c.backoff.Reset()
 			return nil
 		}
 
@@ -347,6 +345,7 @@ func (c *Conn) connect() error {
 }
 
 func (c *Conn) loop() {
+	c.backoff.Reset()
 	for {
 		if err := c.connect(); err != nil {
 			// c.Close() was called
@@ -362,6 +361,7 @@ func (c *Conn) loop() {
 			c.logger.Printf("Authentication failed: %s", err)
 			c.conn.Close()
 		case err == nil:
+			c.backoff.Reset()                 // Don't reset the backoff until we get a connection we can use.
 			c.logger.Printf("Authenticated: id=%d, timeout=%d (seconds)", c.sessionID, c.sessionTimeoutMs/1000)
 			c.hostProvider.Connected()       // mark success
 			closeChan := make(chan struct{}) // channel to tell send loop stop
