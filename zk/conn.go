@@ -549,6 +549,7 @@ func (c *Conn) loop() {
 			c.logger.Printf("authentication failed: %s", err)
 			c.conn.Close()
 		case err == nil:
+			c.backoff.Reset()                 // Don't reset the backoff until we get a connection we can use.
 			if c.logInfo {
 				c.logger.Printf("authenticated: id=%d, timeout=%d", c.SessionID(), c.sessionTimeoutMs)
 			}

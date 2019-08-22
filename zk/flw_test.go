@@ -26,7 +26,8 @@ Node count: 306
 
 func TestFLWRuok(t *testing.T) {
 	t.Parallel()
-	l, err := net.Listen("tcp", "127.0.0.1:0")
+	l, err := net.Listen("tcp", "127.0.0.1:2181")
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -45,7 +46,7 @@ func TestFLWRuok(t *testing.T) {
 	//
 	// Confirm that it also returns false for dead instances
 	//
-	l, err = net.Listen("tcp", "127.0.0.1:0")
+	l, err = net.Listen("tcp", "127.0.0.1:2181")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -64,7 +65,7 @@ func TestFLWRuok(t *testing.T) {
 
 func TestFLWSrvr(t *testing.T) {
 	t.Parallel()
-	l, err := net.Listen("tcp", "127.0.0.1:0")
+	l, err := net.Listen("tcp", "127.0.0.1:2181")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -137,7 +138,7 @@ func TestFLWSrvr(t *testing.T) {
 
 func TestFLWCons(t *testing.T) {
 	t.Parallel()
-	l, err := net.Listen("tcp", "127.0.0.1:0")
+	l, err := net.Listen("tcp", "127.0.0.1:2181")
 	if err != nil {
 		t.Fatal(err)
 	}
